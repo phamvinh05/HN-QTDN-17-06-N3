@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Form View Extension - Thêm field du_an_id vào form view của cong_viec -->
+        <record id="view_cong_viec_form_extend" model="ir.ui.view">
+            <field name="name">cong_viec.form.extend</field>
+            <field name="model">cong_viec</field>
+            <field name="inherit_id" ref="quan_ly_cong_viec.view_cong_viec_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='ten_cong_viec']" position="after">
+                    <field name="du_an_id" 
+                           options="{'no_create': True}"
+                           string="Dự án"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Tree View Extension - Thêm cột du_an_id vào tree view của cong_viec -->
+        <record id="view_cong_viec_tree_extend" model="ir.ui.view">
+            <field name="name">cong_viec.tree.extend</field>
+            <field name="model">cong_viec</field>
+            <field name="inherit_id" ref="quan_ly_cong_viec.view_cong_viec_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='ten_cong_viec']" position="after">
+                    <field name="du_an_id" string="Dự án"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Search View Extension - Thêm field du_an_id vào search view của cong_viec -->
+        <record id="view_cong_viec_search_extend" model="ir.ui.view">
+            <field name="name">cong_viec.search.extend</field>
+            <field name="model">cong_viec</field>
+            <field name="inherit_id" ref="quan_ly_cong_viec.view_cong_viec_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='ten_cong_viec']" position="after">
+                    <field name="du_an_id"/>
+                </xpath>
+                <xpath expr="//group[@expand='0']" position="inside">
+                    <filter string="Dự án" 
+                            name="group_du_an" 
+                            context="{'group_by': 'du_an_id'}"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
+

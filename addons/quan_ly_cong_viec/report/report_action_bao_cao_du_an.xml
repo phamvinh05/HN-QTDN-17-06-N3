@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Định nghĩa Report Action cho báo cáo hiệu quả dự án (PDF) -->
+        <record id="action_report_bao_cao_du_an" model="ir.actions.report">
+            <field name="name">Báo cáo hiệu quả dự án (PDF)</field>
+            <field name="model">bao_cao_du_an</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">quan_ly_cong_viec.report_bao_cao_du_an_template</field>
+            <field name="report_file">quan_ly_cong_viec.report_bao_cao_du_an_template</field>
+            <field name="print_report_name">'Bao_cao_hieu_qua_%s' % (object.du_an_id.projects_id)</field>
+            <field name="binding_model_id" ref="model_bao_cao_du_an"/>
+            <field name="binding_type">report</field>
+        </record>
+    </data>
+</odoo>

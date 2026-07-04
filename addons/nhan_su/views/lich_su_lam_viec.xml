@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Form View -->
+        <record id="view_lich_su_lam_viec_form" model="ir.ui.view">
+            <field name="name">lich_su_lam_viec.form</field>
+            <field name="model">lich_su_lam_viec</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="ma_lich_su" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group col="2">
+                            <group string="Thông tin công việc">
+                                <field name="ten_cong_viec"/>
+                                <field name="nhan_vien_id" options="{'no_create': True}"/>
+                                <field name="phong_ban_id" options="{'no_create': True}"/>
+                            </group>
+                            <group string="Thời gian">
+                                <field name="ngay_bat_dau"/>
+                                <field name="ngay_ket_thuc"/>
+                            </group>
+                        </group>
+                        <group string="Ghi chú">
+                            <field name="ghi_chu" nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Tree View -->
+        <record id="view_lich_su_lam_viec_tree" model="ir.ui.view">
+            <field name="name">lich_su_lam_viec.tree</field>
+            <field name="model">lich_su_lam_viec</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="ma_lich_su"/>
+                    <field name="nhan_vien_id"/>
+                    <field name="ten_cong_viec"/>
+                    <field name="phong_ban_id"/>
+                    <field name="ngay_bat_dau"/>
+                    <field name="ngay_ket_thuc"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_lich_su_lam_viec_search" model="ir.ui.view">
+            <field name="name">lich_su_lam_viec.search</field>
+            <field name="model">lich_su_lam_viec</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="ma_lich_su"/>
+                    <field name="nhan_vien_id"/>
+                    <field name="ten_cong_viec"/>
+                    <field name="phong_ban_id"/>
+                    <group expand="0" string="Nhóm theo">
+                        <filter name="group_nhan_vien" string="Nhân viên" context="{'group_by': 'nhan_vien_id'}"/>
+                        <filter name="group_phong_ban" string="Phòng ban" context="{'group_by': 'phong_ban_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_lich_su_lam_viec" model="ir.actions.act_window">
+            <field name="name">Lịch sử làm việc</field>
+            <field name="res_model">lich_su_lam_viec</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_lich_su_lam_viec_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Tạo lịch sử làm việc mới
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

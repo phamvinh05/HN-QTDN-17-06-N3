@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Form view cho Risk Assessment -->
+        <record id="view_risk_assessment_form" model="ir.ui.view">
+            <field name="name">risk.assessment.form</field>
+            <field name="model">risk.assessment</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="action_start_mitigation" 
+                                string="Bắt đầu khắc phục" 
+                                type="object" 
+                                class="btn-warning"
+                                attrs="{'invisible': [('status', 'not in', ['identified', 'analyzing'])]}"/>
+                        
+                        <button name="action_resolve" 
+                                string="Đánh dấu đã giải quyết" 
+                                type="object" 
+                                class="btn-success"
+                                attrs="{'invisible': [('status', 'in', ['resolved', 'accepted'])]}"/>
+                        
+                        <button name="action_accept_risk" 
+                                string="Chấp nhận rủi ro" 
+                                type="object" 
+                                class="btn-secondary"
+                                attrs="{'invisible': [('status', 'in', ['resolved', 'accepted'])]}"/>
+                        
+                        <field name="status" widget="statusbar" 
+                               statusbar_visible="identified,analyzing,mitigating,resolved"/>
+                    </header>
+                    <sheet>
+                        <widget name="web_ribbon" title="AI Detected" 
+                                bg_color="bg-info" attrs="{'invisible': [('is_ai_detected', '=', False)]}"/>
+                        
+                        <div class="oe_title">
+                            <label for="name"/>
+                            <h1><field name="name" placeholder="Tên rủi ro..."/></h1>
+                        </div>
+                        
+                        <group>
+                            <group>
+                                <field name="risk_type"/>
+                                <field name="risk_level" 
+                                       decoration-success="risk_level == 'low'"
+                                       decoration-warning="risk_level == 'medium'"
+                                       decoration-danger="risk_level in ['high', 'critical']"/>
+                                <field name="project_id" options="{'no_create': True}"/>
+                                <field name="assigned_to" options="{'no_create': True}"/>
+                            </group>
+                            <group>
+                                <field name="probability" string="Xác suất (%)" />
+                                <field name="impact_score"/>
+                                <field name="risk_score" readonly="1"/>
+                                <field name="is_ai_detected" invisible="1"/>
+                                <field name="ai_confidence" string="Độ tin cậy AI (%)" 
+                                       attrs="{'invisible': [('is_ai_detected', '=', False)]}"/>
+                            </group>
+                        </group>
+                        
+                        <group>
+                            <group>
+                                <field name="detected_date"/>
+                                <field name="resolved_date" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="project_progress" string="Tiến độ dự án (%)" />
+                                <field name="project_status"/>
+                            </group>
+                        </group>
+                        
+                        <notebook>
+                            <page string="Mô tả rủi ro">
+                                <field name="description" placeholder="Mô tả chi tiết về rủi ro..."/>
+                            </page>
+                            <page string="Nguyên nhân gốc">
+                                <field name="root_cause" placeholder="Phân tích nguyên nhân gốc..."/>
+                            </page>
+                            <page string="Kế hoạch khắc phục">
+                                <field name="mitigation_plan" placeholder="Đề xuất biện pháp phòng ngừa/khắc phục..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Tree view cho Risk Assessment -->
+        <record id="view_risk_assessment_tree" model="ir.ui.view">
+            <field name="name">risk.assessment.tree</field>
+            <field name="model">risk.assessment</field>
+            <field name="arch" type="xml">
+                <tree decoration-danger="risk_level == 'critical'" 
+                      decoration-warning="risk_level == 'high'"
+                      decoration-info="risk_level == 'medium'">
+                    <field name="name"/>
+                    <field name="project_id"/>
+                    <field name="risk_type"/>
+                    <field name="risk_level" 
+                           decoration-success="risk_level == 'low'"
+                           decoration-warning="risk_level == 'medium'"
+                           decoration-danger="risk_level in ['high', 'critical']"/>
+                    <field name="probability" string="Xác suất (%)"/>
+                    <field name="impact_score"/>
+                    <field name="risk_score" widget="progressbar"/>
+                    <field name="status" 
+                           decoration-success="status == 'resolved'"
+                           decoration-warning="status == 'mitigating'"
+                           decoration-info="status == 'analyzing'"/>
+                    <field name="assigned_to"/>
+                    <field name="detected_date"/>
+                    <field name="is_ai_detected" string="AI" widget="boolean"/>
+                    <field name="ai_confidence" string="AI Confidence (%)"
+                           attrs="{'invisible': [('is_ai_detected', '=', False)]}"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Kanban view cho Risk Assessment -->
+        <record id="view_risk_assessment_kanban" model="ir.ui.view">
+            <field name="name">risk.assessment.kanban</field>
+            <field name="model">risk.assessment</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile" default_group_by="risk_level">
+                    <field name="name"/>
+                    <field name="risk_type"/>
+                    <field name="risk_level"/>
+                    <field name="risk_score"/>
+                    <field name="status"/>
+                    <field name="is_ai_detected"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click">
+                                <div class="oe_kanban_content">
+                                    <div class="o_kanban_record_top">
+                                        <div class="o_kanban_record_headings">
+                                            <strong class="o_kanban_record_title">
+                                                <field name="name"/>
+                                            </strong>
+                                        </div>
+                                        <span t-if="record.is_ai_detected.raw_value" 
+                                              class="badge badge-info">AI</span>
+                                    </div>
+                                    <div class="o_kanban_record_body">
+                                        <field name="risk_type"/>
+                                        <div>Điểm: <field name="risk_score"/></div>
+                                        <div>Trạng thái: <field name="status"/></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Search view cho Risk Assessment -->
+        <record id="view_risk_assessment_search" model="ir.ui.view">
+            <field name="name">risk.assessment.search</field>
+            <field name="model">risk.assessment</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="project_id"/>
+                    <field name="assigned_to"/>
+                    <filter string="Rủi ro nghiêm trọng" name="critical" 
+                            domain="[('risk_level', '=', 'critical')]"/>
+                    <filter string="Rủi ro cao" name="high" 
+                            domain="[('risk_level', '=', 'high')]"/>
+                    <filter string="Chưa giải quyết" name="active" 
+                            domain="[('status', 'in', ['identified', 'analyzing', 'mitigating'])]"/>
+                    <filter string="AI phát hiện" name="ai_detected" 
+                            domain="[('is_ai_detected', '=', True)]"/>
+                    <separator/>
+                    <filter string="Rủi ro tiến độ" name="schedule" 
+                            domain="[('risk_type', '=', 'schedule')]"/>
+                    <filter string="Rủi ro ngân sách" name="budget" 
+                            domain="[('risk_type', '=', 'budget')]"/>
+                    <filter string="Rủi ro nguồn lực" name="resource" 
+                            domain="[('risk_type', '=', 'resource')]"/>
+                    <group expand="0" string="Nhóm theo">
+                        <filter string="Dự án" name="group_project" context="{'group_by': 'project_id'}"/>
+                        <filter string="Mức độ" name="group_level" context="{'group_by': 'risk_level'}"/>
+                        <filter string="Loại" name="group_type" context="{'group_by': 'risk_type'}"/>
+                        <filter string="Trạng thái" name="group_status" context="{'group_by': 'status'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action cho Risk Assessment -->
+        <record id="action_risk_assessment" model="ir.actions.act_window">
+            <field name="name">Đánh giá rủi ro</field>
+            <field name="res_model">risk.assessment</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="context">{'search_default_active': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Tạo đánh giá rủi ro mới
+                </p>
+                <p>
+                    Click nút "Tạo" để thêm rủi ro thủ công, hoặc dùng nút "Phân tích AI" trong dự án để tự động phát hiện rủi ro.
+                </p>
+            </field>
+        </record>
+
+        <!-- Tree view cho Risk Metric -->
+        <record id="view_risk_metric_tree" model="ir.ui.view">
+            <field name="name">risk.metric.tree</field>
+            <field name="model">risk.metric</field>
+            <field name="arch" type="xml">
+                <tree decoration-danger="is_anomaly == True">
+                    <field name="date"/>
+                    <field name="metric_type"/>
+                    <field name="value"/>
+                    <field name="threshold_min"/>
+                    <field name="threshold_max"/>
+                    <field name="is_anomaly" widget="boolean_toggle"/>
+                    <field name="notes"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form view cho Risk Metric -->
+        <record id="view_risk_metric_form" model="ir.ui.view">
+            <field name="name">risk.metric.form</field>
+            <field name="model">risk.metric</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="project_id"/>
+                                <field name="metric_type"/>
+                                <field name="date"/>
+                            </group>
+                            <group>
+                                <field name="value"/>
+                                <field name="threshold_min"/>
+                                <field name="threshold_max"/>
+                                <field name="is_anomaly" readonly="1"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="notes" placeholder="Ghi chú về chỉ số..."/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search view cho Risk Metric -->
+        <record id="view_risk_metric_search" model="ir.ui.view">
+            <field name="name">risk.metric.search</field>
+            <field name="model">risk.metric</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="project_id"/>
+                    <field name="metric_type"/>
+                    <filter string="SPI" name="filter_spi" domain="[('metric_type', '=', 'spi')]"/>
+                    <filter string="CPI" name="filter_cpi" domain="[('metric_type', '=', 'cpi')]"/>
+                    <filter string="Bất thường" name="filter_anomaly" domain="[('is_anomaly', '=', True)]"/>
+                    <group expand="0" string="Nhóm theo">
+                        <filter string="Dự án" name="group_project" context="{'group_by': 'project_id'}"/>
+                        <filter string="Loại chỉ số" name="group_type" context="{'group_by': 'metric_type'}"/>
+                        <filter string="Ngày" name="group_date" context="{'group_by': 'date'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Graph view cho Risk Metric: xem xu hướng SPI/CPI theo thời gian -->
+        <record id="view_risk_metric_graph" model="ir.ui.view">
+            <field name="name">risk.metric.graph</field>
+            <field name="model">risk.metric</field>
+            <field name="arch" type="xml">
+                <graph string="Xu hướng SPI / CPI" type="line">
+                    <field name="date" type="row" interval="day"/>
+                    <field name="metric_type" type="col"/>
+                    <field name="value" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Action cho Risk Metric -->
+        <record id="action_risk_metric" model="ir.actions.act_window">
+            <field name="name">Chỉ số SPI / CPI</field>
+            <field name="res_model">risk.metric</field>
+            <field name="view_mode">tree,graph,form</field>
+            <field name="context">{'search_default_group_project': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Chưa có chỉ số nào được ghi nhận
+                </p>
+                <p>
+                    Các chỉ số SPI (tiến độ) và CPI (chi phí) được hệ thống tự động tính
+                    mỗi khi AI phát hiện rủi ro chạy lại cho dự án (khi tạo/sửa dự án hoặc công việc).
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

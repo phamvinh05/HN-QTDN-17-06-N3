@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Template chính cho báo cáo phê duyệt dự án -->
+        <template id="report_project_approval_template">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <!-- Tiêu đề báo cáo -->
+                            <div class="text-center" style="margin-bottom: 30px;">
+                                <h2 style="color: #875A7B; font-weight: bold;">
+                                    BÁO CÁO PHÊ DUYỆT DỰ ÁN
+                                </h2>
+                                <hr style="border-top: 2px solid #875A7B; width: 50%; margin: 10px auto;"/>
+                            </div>
+
+                            <!-- Thông tin dự án -->
+                            <div style="margin-bottom: 25px;">
+                                <h4 style="color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px;">
+                                    THÔNG TIN DỰ ÁN
+                                </h4>
+                                <table class="table table-bordered" style="margin-top: 10px;">
+                                    <tbody>
+                                        <tr>
+                                            <td style="width: 30%; background-color: #f5f5f5; font-weight: bold;">Mã dự án:</td>
+                                            <td><t t-esc="doc.projects_id"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #f5f5f5; font-weight: bold;">Tên dự án:</td>
+                                            <td><t t-esc="doc.projects_name or 'Chưa đặt tên'"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #f5f5f5; font-weight: bold;">Quản lý dự án:</td>
+                                            <td><t t-esc="doc.manager_name.ho_ten if doc.manager_name else 'Chưa phân công'"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #f5f5f5; font-weight: bold;">Ngày bắt đầu:</td>
+                                            <td><t t-esc="doc.start_date" t-options="{'widget': 'date'}"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #f5f5f5; font-weight: bold;">Ngày kết thúc dự kiến:</td>
+                                            <td><t t-esc="doc.actual_end_date" t-options="{'widget': 'date'}"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #f5f5f5; font-weight: bold;">Tiến độ:</td>
+                                            <td><t t-esc="'%.1f' % doc.progress"/>%</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #f5f5f5; font-weight: bold;">Trạng thái:</td>
+                                            <td>
+                                                <t t-if="doc.status == 'not_started'">Chưa bắt đầu</t>
+                                                <t t-if="doc.status == 'in_progress'">Đang thực hiện</t>
+                                                <t t-if="doc.status == 'completed'">Hoàn thành</t>
+                                                <t t-if="doc.status == 'delayed'">Trì hoãn</t>
+                                                <t t-if="doc.status == 'cancelled'">Hủy bỏ</t>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Thông tin phê duyệt -->
+                            <div style="margin-bottom: 25px;">
+                                <h4 style="color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px;">
+                                    THÔNG TIN PHÊ DUYỆT
+                                </h4>
+                                <table class="table table-bordered" style="margin-top: 10px;">
+                                    <tbody>
+                                        <tr>
+                                            <td style="width: 30%; background-color: #d4edda; font-weight: bold;">Trạng thái duyệt:</td>
+                                            <td style="color: #155724; font-weight: bold;">
+                                                <t t-if="doc.approval_state == 'approved'">✓ ĐÃ PHÊ DUYỆT</t>
+                                                <t t-else="">
+                                                    <t t-esc="doc.approval_state"/>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #f5f5f5; font-weight: bold;">Người phê duyệt:</td>
+                                            <td><t t-esc="doc.approver_id.ho_ten if doc.approver_id else ''"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #f5f5f5; font-weight: bold;">Ngày phê duyệt:</td>
+                                            <td><t t-esc="doc.approval_date" t-options="{'widget': 'datetime'}"/></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Chữ ký phê duyệt -->
+                            <div style="margin-top: 40px;">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <!-- Để trống bên trái -->
+                                    </div>
+                                    <div class="col-6 text-center">
+                                        <p style="font-weight: bold; margin-bottom: 5px;">NGƯỜI PHÊ DUYỆT</p>
+                                        <p style="font-style: italic; font-size: 12px; margin-bottom: 15px;">
+                                            (Ký và ghi rõ họ tên)
+                                        </p>
+                                        <!-- Hiển thị chữ ký -->
+                                        <t t-if="doc.approval_signature">
+                                            <img t-att-src="'data:image/png;base64,%s' % doc.approval_signature.decode('utf-8')" 
+                                                 style="max-width: 200px; max-height: 100px; margin-bottom: 10px;"/>
+                                        </t>
+                                        <p style="font-weight: bold; margin-top: 10px;">
+                                            <t t-esc="doc.approver_id.ho_ten if doc.approver_id else ''"/>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Footer với timestamp -->
+                            <div style="margin-top: 50px; border-top: 1px solid #ddd; padding-top: 10px;">
+                                <p style="font-size: 10px; color: #666; text-align: center;">
+                                    Tài liệu này được tạo tự động từ hệ thống quản lý dự án.<br/>
+                                    Thời gian in: <t t-esc="datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')"/>
+                                </p>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>
+

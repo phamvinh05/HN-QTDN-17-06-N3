@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Inherit Form View của nhan_vien - Thêm tab "Dự án tham gia" -->
+        <record id="view_nhan_vien_form_inherit_pm" model="ir.ui.view">
+            <field name="name">nhan_vien.form.inherit.pm</field>
+            <field name="model">nhan_vien</field>
+            <field name="inherit_id" ref="nhan_su.view_nhan_vien_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <!-- Tab "Dự án tham gia" - chỉ hiển thị khi module project_management được cài đặt -->
+                    <page string="Dự án tham gia" 
+                          attrs="{'invisible': [('has_project_management', '=', False)]}">
+                        <field name="has_project_management" invisible="1"/>
+                        <field name="du_an_tham_gia_ids" 
+                               readonly="1"
+                               attrs="{'invisible': [('has_project_management', '=', False)]}">
+                            <tree>
+                                <field name="projects_id"/>
+                                <field name="projects_name"/>
+                                <field name="manager_name"/>
+                                <field name="status" 
+                                       decoration-muted="status == 'not_started'"
+                                       decoration-warning="status == 'in_progress'"
+                                       decoration-success="status == 'completed'"
+                                       decoration-danger="status == 'cancelled'"/>
+                                <field name="progress" widget="progressbar"/>
+                                <field name="start_date"/>
+                                <field name="actual_end_date"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
+

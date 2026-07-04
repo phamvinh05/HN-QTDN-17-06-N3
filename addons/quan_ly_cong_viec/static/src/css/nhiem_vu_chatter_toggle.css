@@ -1,0 +1,10 @@
+.o_nhiem_vu_chatter_toggle_btn {
+    position: fixed;
+    top: 80px;
+    right: 320px;
+    z-index: 100;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}

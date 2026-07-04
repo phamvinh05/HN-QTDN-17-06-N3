@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Định nghĩa Report Action cho báo cáo phê duyệt dự án -->
+        <record id="action_report_project_approval" model="ir.actions.report">
+            <field name="name">Báo cáo phê duyệt dự án</field>
+            <field name="model">projects</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">project_management.report_project_approval_template</field>
+            <field name="report_file">project_management.report_project_approval_template</field>
+            <field name="print_report_name">'Phe_duyet_du_an_%s' % (object.projects_id)</field>
+            <field name="binding_model_id" ref="model_projects"/>
+            <field name="binding_type">report</field>
+        </record>
+    </data>
+</odoo>
+

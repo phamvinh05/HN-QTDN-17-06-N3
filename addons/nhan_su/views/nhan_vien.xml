@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Form View -->
+        <record id="view_nhan_vien_form" model="ir.ui.view">
+            <field name="name">nhan_vien.form</field>
+            <field name="model">nhan_vien</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="ma_nhan_vien" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group col="2">
+                            <group string="Thông tin cá nhân">
+                                <field name="ho_ten_dem"/>
+                                <field name="ten"/>
+                                <field name="ho_ten" readonly="1"/>
+                                <field name="ngay_sinh"/>
+                                <field name="gioi_tinh"/>
+                                <field name="que_quan"/>
+                            </group>
+                            <group string="Thông tin liên hệ">
+                                <field name="email"/>
+                                <field name="so_dien_thoai"/>
+                                <field name="chuc_vu_id" options="{'no_create': True}"/>
+                                <field name="phong_ban_id" options="{'no_create': True}"/>
+                                <field name="image" widget="image" class="oe_avatar"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Lịch sử làm việc">
+                                <field name="lich_su_lam_viec_ids">
+                                    <tree editable="bottom">
+                                        <field name="ma_lich_su" readonly="1"/>
+                                        <field name="ten_cong_viec"/>
+                                        <field name="phong_ban_id"/>
+                                        <field name="ngay_bat_dau"/>
+                                        <field name="ngay_ket_thuc"/>
+                                        <field name="ghi_chu"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Tree View -->
+        <record id="view_nhan_vien_tree" model="ir.ui.view">
+            <field name="name">nhan_vien.tree</field>
+            <field name="model">nhan_vien</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="ma_nhan_vien"/>
+                    <field name="ho_ten"/>
+                    <field name="chuc_vu_id"/>
+                    <field name="phong_ban_id"/>
+                    <field name="ngay_sinh"/>
+                    <field name="gioi_tinh"/>
+                    <field name="email"/>
+                    <field name="so_dien_thoai"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Kanban View (Card View) -->
+        <record id="view_nhan_vien_kanban" model="ir.ui.view">
+            <field name="name">nhan_vien.kanban</field>
+            <field name="model">nhan_vien</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_nhan_vien">
+                    <field name="id"/>
+                    <field name="ma_nhan_vien"/>
+                    <field name="ho_ten"/>
+                    <field name="chuc_vu_id"/>
+                    <field name="gioi_tinh"/>
+                    <field name="email"/>
+                    <field name="ngay_sinh"/>
+                    <field name="image"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="nhan_vien_card oe_kanban_global_click">
+                                <div class="nhan_vien_card_left">
+                                    <img class="nhan_vien_card_image" t-att-alt="record.ho_ten.value" t-att-src="kanban_image('nhan_vien', 'image', record.id.raw_value)"/>
+                                </div>
+                                <div class="nhan_vien_card_right">
+                                    <div class="nhan_vien_info">
+                                        <h3 class="nhan_vien_name">
+                                            <field name="ho_ten"/>
+                                        </h3>
+                                        <div class="nhan_vien_detail_row">
+                                            <i class="fa fa-id-card" title="Mã nhân viên"/> 
+                                            <strong>Mã NV:</strong> 
+                                            <span><field name="ma_nhan_vien"/></span>
+                                        </div>
+                                        <div class="nhan_vien_detail_row">
+                                            <i class="fa fa-calendar" title="Ngày sinh"/> 
+                                            <strong>Ngày sinh:</strong> 
+                                            <span><field name="ngay_sinh"/></span>
+                                        </div>
+                                        <div class="nhan_vien_detail_row">
+                                            <i class="fa fa-venus-mars" title="Giới tính"/> 
+                                            <strong>Giới tính:</strong> 
+                                            <span t-if="record.gioi_tinh.raw_value == 'nam'">Nam</span>
+                                            <span t-if="record.gioi_tinh.raw_value == 'nu'">Nữ</span>
+                                            <span t-if="record.gioi_tinh.raw_value == 'khac'">Khác</span>
+                                            <span t-if="!record.gioi_tinh.raw_value">-</span>
+                                        </div>
+                                        <div class="nhan_vien_detail_row">
+                                            <i class="fa fa-briefcase" title="Chức vụ"/> 
+                                            <strong>Chức vụ:</strong> 
+                                            <span><field name="chuc_vu_id"/></span>
+                                        </div>
+                                        <div class="nhan_vien_detail_row">
+                                            <i class="fa fa-envelope" title="Email"/> 
+                                            <strong>Email:</strong> 
+                                            <span><field name="email"/></span>
+                                        </div>
+                                    </div>
+                                    <div class="nhan_vien_actions">
+                                        <a type="edit" class="btn btn-primary btn-sm" role="button">
+                                            <i class="fa fa-edit" title="Sửa"/> Sửa
+                                        </a>
+                                        <a type="delete" class="btn btn-danger btn-sm" role="button">
+                                            <i class="fa fa-trash" title="Xóa"/> Xóa
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_nhan_vien_search" model="ir.ui.view">
+            <field name="name">nhan_vien.search</field>
+            <field name="model">nhan_vien</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="ma_nhan_vien"/>
+                    <field name="ho_ten"/>
+                    <field name="chuc_vu_id"/>
+                    <field name="phong_ban_id"/>
+                    <field name="email"/>
+                    <field name="so_dien_thoai"/>
+                    <filter name="filter_nam" string="Nam" domain="[('gioi_tinh', '=', 'nam')]"/>
+                    <filter name="filter_nu" string="Nữ" domain="[('gioi_tinh', '=', 'nu')]"/>
+                    <group expand="0" string="Nhóm theo">
+                        <filter name="group_chuc_vu" string="Chức vụ" context="{'group_by': 'chuc_vu_id'}"/>
+                        <filter name="group_phong_ban" string="Phòng ban" context="{'group_by': 'phong_ban_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_nhan_vien" model="ir.actions.act_window">
+            <field name="name">Nhân viên</field>
+            <field name="res_model">nhan_vien</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="search_view_id" ref="view_nhan_vien_search"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Tạo nhân viên mới
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

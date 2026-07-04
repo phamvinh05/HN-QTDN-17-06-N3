@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem
+            id="menu_root"
+            name="QLCV"
+            sequence="0"/>
+        
+        <!-- Submenu Quản lý -->
+        <menuitem 
+            id="menu_quan_ly"
+            name="Quản lý"
+            parent="menu_root"
+            sequence="1"/>
+          
+        <!-- Menu Quản lý dự án đã được di chuyển sang module project_management -->
+        <!-- Không thể tham chiếu trực tiếp vì tạo recursive dependency -->
+        <!-- Nếu cần, có thể truy cập qua menu của module project_management -->
+        <!--
+        <menuitem name="Quản lý dự án" 
+            id="menu_du_an" 
+            parent="menu_quan_ly" 
+            sequence="1"
+            action="project_management.action_projects"
+        />
+        -->
+
+        <menuitem name="Quản lý công việc" 
+            id="menu_cong_viec" 
+            parent="menu_quan_ly" 
+            sequence="2"
+            action="action_cong_viec"
+        />
+
+        <menuitem name="Nhiệm vụ" 
+            id="menu_nhiem_vu" 
+            parent="menu_quan_ly" 
+            sequence="3"
+            action="action_nhiem_vu"
+        />
+
+
+        <menuitem name="Theo dõi tiến độ" 
+            id="menu_tien_do" 
+            parent="menu_quan_ly" 
+            sequence="4"
+            action="action_tien_do"
+        />
+        
+        <!-- Submenu Báo cáo -->
+        <menuitem 
+            id="menu_bao_cao"
+            name="Báo cáo &amp; Đánh giá"
+            parent="menu_root"
+            sequence="2"/>
+        
+        <menuitem name="Hiệu quả nhân viên" 
+            id="menu_bao_cao_hieu_qua" 
+            parent="menu_bao_cao" 
+            sequence="1"
+            action="action_bao_cao_hieu_qua"
+        />
+
+        <menuitem name="Hiệu quả dự án" 
+            id="menu_bao_cao_du_an" 
+            parent="menu_bao_cao" 
+            sequence="2"
+            action="action_bao_cao_du_an"
+        />
+    </data>
+</odoo>

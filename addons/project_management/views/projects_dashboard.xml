@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Kanban Dashboard: tổng hợp tiến độ, ngân sách, rủi ro của nhiều dự án cùng lúc -->
+        <record id="view_projects_dashboard_kanban" model="ir.ui.view">
+            <field name="name">projects.dashboard.kanban</field>
+            <field name="model">projects</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_dashboard">
+                    <field name="projects_id"/>
+                    <field name="projects_name"/>
+                    <field name="progress"/>
+                    <field name="status"/>
+                    <field name="risk_count_dang_mo"/>
+                    <field name="risk_level_cao_nhat"/>
+                    <field name="tong_ngan_sach_du_toan"/>
+                    <field name="tong_chi_phi_thuc_te"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click o_kanban_card" style="padding: 12px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <strong>
+                                        <field name="projects_id"/> - <field name="projects_name"/>
+                                    </strong>
+                                    <span t-attf-class="badge badge-#{record.risk_level_cao_nhat.raw_value == 'critical' ? 'danger' : (record.risk_level_cao_nhat.raw_value == 'high' ? 'warning' : (record.risk_level_cao_nhat.raw_value == 'none' ? 'success' : 'info'))}">
+                                        <field name="risk_level_cao_nhat"/>
+                                    </span>
+                                </div>
+
+                                <div style="margin-top:8px;">
+                                    <div>Tiến độ: <field name="progress"/>%</div>
+                                    <div class="progress" style="height:6px;">
+                                        <div class="progress-bar" role="progressbar"
+                                             t-attf-style="width: #{record.progress.raw_value}%"/>
+                                    </div>
+                                </div>
+
+                                <div style="margin-top:8px; display:flex; justify-content:space-between;">
+                                    <span>Ngân sách: <field name="tong_ngan_sach_du_toan"/></span>
+                                    <span>Chi tiêu: <field name="tong_chi_phi_thuc_te"/></span>
+                                </div>
+
+                                <div style="margin-top:8px; display:flex; justify-content:space-between;">
+                                    <span>Trạng thái: <field name="status"/></span>
+                                    <t t-if="record.risk_count_dang_mo.raw_value > 0">
+                                        <span class="text-danger"><field name="risk_count_dang_mo"/> rủi ro đang mở</span>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="text-success">Không có rủi ro</span>
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Graph view tổng hợp: so sánh tiến độ vs ngân sách đã chi giữa các dự án -->
+        <record id="view_projects_dashboard_graph" model="ir.ui.view">
+            <field name="name">projects.dashboard.graph</field>
+            <field name="model">projects</field>
+            <field name="arch" type="xml">
+                <graph string="So sánh tiến độ và ngân sách giữa các dự án" type="bar">
+                    <field name="projects_id" type="row"/>
+                    <field name="progress" type="measure"/>
+                    <field name="tong_chi_phi_thuc_te" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Search view: cho phép lọc/group dashboard theo trạng thái, mức rủi ro -->
+        <record id="view_projects_dashboard_search" model="ir.ui.view">
+            <field name="name">projects.dashboard.search</field>
+            <field name="model">projects</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="projects_id"/>
+                    <field name="projects_name"/>
+                    <filter string="Có rủi ro đang mở" name="filter_has_risk" domain="[('risk_count_dang_mo', '&gt;', 0)]"/>
+                    <filter string="Rủi ro nghiêm trọng" name="filter_critical" domain="[('risk_level_cao_nhat', '=', 'critical')]"/>
+                    <filter string="Đang thực hiện" name="filter_in_progress" domain="[('status', '=', 'in_progress')]"/>
+                    <group expand="0" string="Nhóm theo">
+                        <filter string="Trạng thái" name="group_status" context="{'group_by': 'status'}"/>
+                        <filter string="Mức rủi ro" name="group_risk_level" context="{'group_by': 'risk_level_cao_nhat'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action: Dashboard tổng hợp dự án -->
+        <record id="action_projects_dashboard" model="ir.actions.act_window">
+            <field name="name">Dashboard dự án</field>
+            <field name="res_model">projects</field>
+            <field name="view_mode">kanban,graph,tree,form</field>
+            <field name="search_view_id" ref="view_projects_dashboard_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Chưa có dự án nào để hiển thị
+                </p>
+                <p>
+                    Dashboard tổng hợp tiến độ, ngân sách và mức rủi ro của tất cả dự án,
+                    giúp so sánh nhanh nhiều dự án cùng lúc.
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,79 @@
+# -*- coding: utf-8 -*-
+from odoo import models, fields, api
+
+
+class NhanVien(models.Model):
+    _name = 'nhan_vien'
+    _description = 'Bảng chứa thông tin nhân viên'
+    _rec_name = 'ho_ten'
+
+    # Mã nhân viên - tự động tạo bằng sequence
+    ma_nhan_vien = fields.Char(
+        string="Mã nhân viên",
+        readonly=True,
+        copy=False,
+        default=lambda self: 'Mới'
+    )
+    
+    # Thông tin cá nhân
+    ho_ten_dem = fields.Char(string="Họ tên đệm")
+    ten = fields.Char(string="Tên", required=True)
+    ho_ten = fields.Char(
+        string="Họ và tên",
+        compute='_compute_ho_ten',
+        store=True
+    )
+    
+    ngay_sinh = fields.Date(string="Ngày sinh")
+    gioi_tinh = fields.Selection(
+        selection=[
+            ('nam', 'Nam'),
+            ('nu', 'Nữ'),
+            ('khac', 'Khác'),
+        ],
+        string="Giới tính"
+    )
+    que_quan = fields.Char(string="Quê quán")
+    email = fields.Char(string="Email")
+    so_dien_thoai = fields.Char(string="Số điện thoại")
+    image = fields.Binary(string="Ảnh nhân viên")
+
+    # Liên kết Many2one - suffix _id
+    chuc_vu_id = fields.Many2one('chuc_vu', string='Chức vụ', ondelete='set null')
+    phong_ban_id = fields.Many2one('phong_ban', string='Phòng ban', ondelete='set null')
+
+    # Liên kết One2many - suffix _ids
+    lich_su_lam_viec_ids = fields.One2many(
+        'lich_su_lam_viec',
+        'nhan_vien_id',
+        string='Lịch sử làm việc'
+    )
+
+    @api.depends('ho_ten_dem', 'ten')
+    def _compute_ho_ten(self):
+        """Tính toán họ tên đầy đủ"""
+        for record in self:
+            parts = []
+            if record.ho_ten_dem:
+                parts.append(record.ho_ten_dem)
+            if record.ten:
+                parts.append(record.ten)
+            record.ho_ten = ' '.join(parts) if parts else ''
+
+    @api.model
+    def create(self, vals):
+        """Tự động tạo mã nhân viên khi tạo mới"""
+        if vals.get('ma_nhan_vien', 'Mới') == 'Mới':
+            vals['ma_nhan_vien'] = self.env['ir.sequence'].next_by_code('nhan_vien.sequence') or 'NV001'
+        return super(NhanVien, self).create(vals)
+
+    def name_get(self):
+        """Hiển thị mã và họ tên nhân viên"""
+        result = []
+        for record in self:
+            if record.ho_ten:
+                name = f"{record.ma_nhan_vien} - {record.ho_ten}"
+            else:
+                name = record.ma_nhan_vien or f'Nhân viên #{record.id}'
+            result.append((record.id, name))
+        return result

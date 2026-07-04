@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_projects_form" model="ir.ui.view">
+            <field name="name">projects.form</field>
+            <field name="model">projects</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <!-- Nút Gửi xét duyệt - hiển thị khi ở trạng thái Nháp -->
+                        <button name="action_submit_approval" 
+                                string="Gửi xét duyệt" 
+                                type="object" 
+                                class="btn-primary"
+                                attrs="{'invisible': [('approval_state', '!=', 'draft')]}"/>
+                        
+                        <!-- Nút Phê duyệt - hiển thị khi Chờ xét duyệt -->
+                        <button name="action_approve" 
+                                string="Phê duyệt" 
+                                type="object" 
+                                class="btn-success"
+                                attrs="{'invisible': [('approval_state', '!=', 'pending')]}"/>
+                        
+                        <!-- Nút Từ chối - hiển thị khi Chờ xét duyệt -->
+                        <button name="action_reject" 
+                                string="Từ chối" 
+                                type="object" 
+                                class="btn-danger"
+                                attrs="{'invisible': [('approval_state', '!=', 'pending')]}"/>
+                        
+                        <!-- Nút Đặt lại nháp - hiển thị khi Từ chối -->
+                        <button name="action_reset_draft" 
+                                string="Đặt lại nháp" 
+                                type="object" 
+                                attrs="{'invisible': [('approval_state', '!=', 'rejected')]}"/>
+                        
+                        <!-- Nút In PDF - hiển thị khi Đã phê duyệt -->
+                        <button name="action_print_approval_pdf" 
+                                string="In PDF phê duyệt" 
+                                type="object" 
+                                class="btn-secondary"
+                                attrs="{'invisible': [('approval_state', '!=', 'approved')]}"/>
+
+                        <!-- Nút Nhân bản dự án - luôn hiện, dùng để tạo dự án mới cùng
+                             cấu trúc công việc/nhiệm vụ (không copy tiến độ/dữ liệu thực thi) -->
+                        <button name="action_nhan_ban_du_an"
+                                string="Nhân bản dự án"
+                                type="object"
+                                class="btn-secondary"
+                                confirm="Tạo một dự án mới với cùng cấu trúc công việc/nhiệm vụ (không copy tiến độ, người phụ trách, ngày thực hiện)?"/>
+
+                        <!-- Nút AI tóm tắt báo cáo - đăng tóm tắt tình hình dự án vào chatter -->
+                        <button name="action_ai_tom_tat_bao_cao"
+                                string="AI tóm tắt báo cáo"
+                                type="object"
+                                class="btn-secondary"
+                                icon="fa-magic"/>
+                        
+                        <!-- Status bar trạng thái duyệt -->
+                        <field name="approval_state" widget="statusbar" 
+                               statusbar_visible="draft,pending,approved"
+                               style="margin-right: 20px;"/>
+                    </header>
+                    <sheet>
+                        <group col="2">
+                            <group>
+                                <field name="projects_id"/>
+                                <field name="projects_name"/>
+                                <field name="manager_name"/>
+                            </group>
+                            <group>
+                                <field name="start_date"/>
+                                <field name="actual_end_date"/>
+                                <field name="progress"/>
+                                <field name="status"
+                                    decoration-muted="status == 'not_started'"
+                                    decoration-warning="status == 'in_progress'"
+                                    decoration-success="status == 'completed'"  
+                                    decoration-info="status == 'delayed'"
+                                    decoration-danger="status == 'cancelled'"                           
+                                />
+                                <field name="ly_do_1"
+                                    attrs="{'invisible': [('status', 'not in', ['cancelled', 'delayed'])]}"
+                                    string="Lý do"
+                                    placeholder="Nhập lý do hủy bỏ hoặc trì hoãn..."
+                                />
+                            </group>
+                            
+                        </group>
+
+                        <notebook>
+                            <page string="Thông tin dự án">
+                                <group col="6">                                    
+                                    <field name="projects_id" newline="1"/>
+                                    <field name="projects_name"/>
+                                    <field name="manager_name"/>
+                                    <field name="start_date"/>
+                                    <field name="actual_end_date"/>
+                                    <field name="progress"/>
+                                    <field name="status" newline="1"/>
+                                </group>
+                            </page>
+                            <page string="Công việc dự án">
+                                <field name="task_ids">
+                                    <tree editable="bottom">
+                                        <field name="ma_cong_viec"/>
+                                        <field name="ten_cong_viec"/>
+                                        <field name="nguoi_phu_trach_id" options="{'no_create': True}"/>
+                                        <field name="nhan_vien_phan_cong_ids" widget="many2many_tags" options="{'no_create': True, 'no_open': False}"/>
+                                        <field name="ngay_bat_dau"/>
+                                        <field name="ngay_ket_thuc"/>
+                                        <field name="muc_do_uu_tien"/>
+                                        <field name="ti_le_hoan_thanh"/>
+                                        <field name="trang_thai"
+                                            decoration-muted="trang_thai == 'moi'"
+                                            decoration-warning="trang_thai == 'dang_thuc_hien'"
+                                            decoration-success="trang_thai == 'hoan_thanh'"
+                                            decoration-info="trang_thai == 'tam_dung'"
+                                        />
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Ngân sách dự án">
+                                <field name="budget_ids">
+                                    <tree editable="bottom">
+                                        <field name="budgets_id"/>
+                                        <field name="budgets_name"/>
+                                        <field name="budget_planned"/>
+                                        <field name="budget_allocated"/>
+                                        <field name="budget_spent"/>
+                                        <field name="budget_difference"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <!-- Tab Xét duyệt dự án -->
+                            <page string="Xét duyệt dự án">
+                                <group col="2">
+                                    <group string="Thông tin xét duyệt">
+                                        <field name="approval_state" readonly="1"/>
+                                        <field name="approver_id" readonly="1"/>
+                                        <field name="approval_date" readonly="1"/>
+                                    </group>
+                                    <group string="Chữ ký phê duyệt" 
+                                           attrs="{'invisible': [('approval_state', 'not in', ['pending', 'approved'])]}">
+                                        <field name="approval_signature" widget="signature" 
+                                               attrs="{'readonly': [('approval_state', '=', 'approved')]}"/>
+                                    </group>
+                                </group>
+                                <group string="Lý do từ chối" 
+                                       attrs="{'invisible': [('approval_state', 'not in', ['pending', 'rejected'])]}">
+                                    <field name="rejection_reason" nolabel="1" 
+                                           placeholder="Nhập lý do từ chối dự án..."
+                                           attrs="{'readonly': [('approval_state', '=', 'rejected')]}"/>
+                                </group>
+                            </page>
+                        </notebook>
+
+
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="view_projects_tree" model="ir.ui.view">
+            <field name="name">projects.tree</field>
+            <field name="model">projects</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="projects_id"/>
+                    <field name="projects_name"/>
+                    <field name="manager_name"/>
+                    <field name="start_date"/>
+                    <field name="actual_end_date"/>
+                    <field name="progress"/>
+                    <field name="status"
+                        decoration-muted="status == 'not_started'"
+                        decoration-warning="status == 'in_progress'"
+                        decoration-success="status == 'completed'"
+                        decoration-info="status == 'delayed'"
+                        decoration-danger="status == 'cancelled'"  
+                    />
+                    <field name="approval_state"
+                        decoration-muted="approval_state == 'draft'"
+                        decoration-info="approval_state == 'pending'"
+                        decoration-success="approval_state == 'approved'"
+                        decoration-danger="approval_state == 'rejected'"
+                    />
+                    <button string="Xem Biểu Đồ Công Việc" type="object" name="action_view_task_chart" class="btn-primary"/>              
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_projects_search" model="ir.ui.view">
+            <field name="name">projects.search</field>
+            <field name="model">projects</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="projects_id"/>
+                    <field name="projects_name"/>
+                    <field name="manager_name"/>
+                    <field name="start_date"/>
+                    <field name="actual_end_date"/>
+                    <field name="progress"/>
+                    <field name="status"/>
+                    <field name="approval_state"/>
+                    <filter name="filter_draft" string="Nháp" domain="[('approval_state', '=', 'draft')]"/>
+                    <filter name="filter_pending" string="Chờ duyệt" domain="[('approval_state', '=', 'pending')]"/>
+                    <filter name="filter_approved" string="Đã duyệt" domain="[('approval_state', '=', 'approved')]"/>
+                    <filter name="filter_rejected" string="Từ chối" domain="[('approval_state', '=', 'rejected')]"/>
+                    <separator/>
+                    <group expand="0" string="Nhóm theo">
+                        <filter name="group_approval_state" string="Trạng thái duyệt" context="{'group_by': 'approval_state'}"/>
+                        <filter name="group_status" string="Trạng thái" context="{'group_by': 'status'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_projects" model="ir.actions.act_window">
+        <field name="name">Dự Án</field>
+            <field name="res_model">projects</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_projects_search"/>
+        </record>
+        
+    </data>
+</odoo>

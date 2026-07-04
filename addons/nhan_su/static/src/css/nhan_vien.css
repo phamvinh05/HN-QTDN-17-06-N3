@@ -1,0 +1,160 @@
+/* Custom CSS cho Kanban View Nhân Viên */
+
+/* Bỏ grouping container */
+.o_kanban_nhan_vien .o_kanban_group {
+    background: transparent !important;
+    padding: 0 !important;
+}
+
+.o_kanban_nhan_vien .o_kanban_record {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Card chính */
+.nhan_vien_card {
+    display: flex !important;
+    width: 600px !important;
+    height: 280px !important;
+    margin: 15px !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid #e0e0e0 !important;
+    background: white !important;
+    transition: all 0.3s ease !important;
+}
+
+.nhan_vien_card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Nửa trái - Hình ảnh */
+.nhan_vien_card_left {
+    width: 50% !important;
+    min-width: 50% !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+}
+
+.nhan_vien_card_image {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+}
+
+/* Nửa phải - Thông tin */
+.nhan_vien_card_right {
+    width: 50% !important;
+    min-width: 50% !important;
+    padding: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+}
+
+/* Phần thông tin */
+.nhan_vien_info {
+    flex: 1 !important;
+    display: block !important;
+}
+
+.nhan_vien_name {
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    color: #2c3e50 !important;
+    margin: 0 0 15px 0 !important;
+    padding-bottom: 10px !important;
+    border-bottom: 2px solid #7c7bad !important;
+    display: block !important;
+}
+
+.nhan_vien_detail_row {
+    display: flex !important;
+    align-items: center !important;
+    margin-bottom: 8px !important;
+    font-size: 13px !important;
+    color: #555 !important;
+}
+
+.nhan_vien_detail_row i {
+    width: 20px !important;
+    margin-right: 8px !important;
+    color: #7c7bad !important;
+    font-size: 14px !important;
+}
+
+.nhan_vien_detail_row strong {
+    margin-right: 5px !important;
+    color: #2c3e50 !important;
+    min-width: 80px !important;
+}
+
+.nhan_vien_detail_row span {
+    color: #555 !important;
+}
+
+/* Phần buttons */
+.nhan_vien_actions {
+    display: flex !important;
+    gap: 10px !important;
+    justify-content: center !important;
+    padding-top: 15px !important;
+    border-top: 1px solid #e0e0e0 !important;
+}
+
+.nhan_vien_actions .btn-sm {
+    flex: 1 !important;
+    padding: 8px 16px !important;
+    font-size: 13px !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+    border: none !important;
+    cursor: pointer !important;
+}
+
+.nhan_vien_actions .btn-primary {
+    background-color: #5867dd !important;
+    color: white !important;
+}
+
+.nhan_vien_actions .btn-primary:hover {
+    background-color: #4655c8 !important;
+    transform: scale(1.05) !important;
+}
+
+.nhan_vien_actions .btn-danger {
+    background-color: #fd397a !important;
+    color: white !important;
+}
+
+.nhan_vien_actions .btn-danger:hover {
+    background-color: #e6245d !important;
+    transform: scale(1.05) !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .nhan_vien_card {
+        width: 100%;
+        height: auto;
+        flex-direction: column;
+    }
+    
+    .nhan_vien_card_left,
+    .nhan_vien_card_right {
+        width: 100%;
+    }
+    
+    .nhan_vien_card_left {
+        height: 200px;
+    }
+}

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Form View -->
+        <record id="view_bao_cao_hieu_qua_form" model="ir.ui.view">
+            <field name="name">bao_cao_hieu_qua.form</field>
+            <field name="model">bao_cao_hieu_qua</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="nhan_vien_id" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group col="2">
+                            <group string="Thông tin báo cáo">
+                                <field name="nhan_vien_id" options="{'no_create': True}"/>
+                                <field name="thang"/>
+                                <field name="nam"/>
+                            </group>
+                            <group string="Đánh giá">
+                                <field name="xep_loai" readonly="1"/>
+                                <field name="diem_trung_binh" readonly="1"/>
+                            </group>
+                        </group>
+                        <group col="4">
+                            <group string="Thống kê nhiệm vụ">
+                                <field name="tong_nhiem_vu" readonly="1"/>
+                                <field name="nhiem_vu_hoan_thanh" readonly="1"/>
+                                <field name="nhiem_vu_tre_han" readonly="1"/>
+                                <field name="ty_le_hoan_thanh" widget="progressbar" readonly="1"/>
+                            </group>
+                        </group>
+                        <group string="Ghi chú">
+                            <field name="ghi_chu" nolabel="1"/>
+                        </group>
+                        <notebook>
+                            <page string="Danh sách nhiệm vụ">
+                                <field name="nhiem_vu_ids" readonly="1">
+                                    <tree>
+                                        <field name="ma_nhiem_vu"/>
+                                        <field name="ten_nhiem_vu"/>
+                                        <field name="cong_viec_id"/>
+                                        <field name="trang_thai" decoration-success="trang_thai=='hoan_thanh'" decoration-danger="trang_thai=='qua_han'"/>
+                                        <field name="ti_le_hoan_thanh" widget="progressbar"/>
+                                        <field name="danh_gia"/>
+                                        <field name="ngay_bat_dau"/>
+                                        <field name="ngay_ket_thuc"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Tree View -->
+        <record id="view_bao_cao_hieu_qua_tree" model="ir.ui.view">
+            <field name="name">bao_cao_hieu_qua.tree</field>
+            <field name="model">bao_cao_hieu_qua</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="nhan_vien_id"/>
+                    <field name="thang"/>
+                    <field name="nam"/>
+                    <field name="tong_nhiem_vu"/>
+                    <field name="nhiem_vu_hoan_thanh"/>
+                    <field name="nhiem_vu_tre_han"/>
+                    <field name="ty_le_hoan_thanh" widget="progressbar"/>
+                    <field name="diem_trung_binh"/>
+                    <field name="xep_loai"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_bao_cao_hieu_qua_search" model="ir.ui.view">
+            <field name="name">bao_cao_hieu_qua.search</field>
+            <field name="model">bao_cao_hieu_qua</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="nhan_vien_id"/>
+                    <field name="thang"/>
+                    <field name="nam"/>
+                    <filter string="Xếp loại A" name="xep_loai_a" domain="[('xep_loai', '=', 'a')]"/>
+                    <filter string="Xếp loại B" name="xep_loai_b" domain="[('xep_loai', '=', 'b')]"/>
+                    <filter string="Xếp loại C" name="xep_loai_c" domain="[('xep_loai', '=', 'c')]"/>
+                    <filter string="Xếp loại D" name="xep_loai_d" domain="[('xep_loai', '=', 'd')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Nhân viên" name="group_nhan_vien" context="{'group_by': 'nhan_vien_id'}"/>
+                        <filter string="Tháng" name="group_thang" context="{'group_by': 'thang'}"/>
+                        <filter string="Năm" name="group_nam" context="{'group_by': 'nam'}"/>
+                        <filter string="Xếp loại" name="group_xep_loai" context="{'group_by': 'xep_loai'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_bao_cao_hieu_qua" model="ir.actions.act_window">
+            <field name="name">Báo cáo hiệu quả</field>
+            <field name="res_model">bao_cao_hieu_qua</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Tạo báo cáo hiệu quả làm việc
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Template báo cáo hiệu quả dự án dạng PDF (mục 13 - xuất báo cáo từ mục 6) -->
+        <template id="report_bao_cao_du_an_template">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <div class="text-center" style="margin-bottom: 30px;">
+                                <h2 style="color: #875A7B; font-weight: bold;">
+                                    BÁO CÁO HIỆU QUẢ DỰ ÁN
+                                </h2>
+                                <hr style="border-top: 2px solid #875A7B; width: 50%; margin: 10px auto;"/>
+                            </div>
+
+                            <!-- Thông tin dự án -->
+                            <div style="margin-bottom: 25px;">
+                                <h4 style="color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px;">
+                                    THÔNG TIN DỰ ÁN
+                                </h4>
+                                <table class="table table-bordered" style="margin-top: 10px;">
+                                    <tbody>
+                                        <tr>
+                                            <td style="width: 30%; background-color: #f5f5f5; font-weight: bold;">Mã dự án:</td>
+                                            <td><t t-esc="doc.du_an_id.projects_id"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #f5f5f5; font-weight: bold;">Tên dự án:</td>
+                                            <td><t t-esc="doc.du_an_id.projects_name or 'Chưa đặt tên'"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #f5f5f5; font-weight: bold;">Quản lý dự án:</td>
+                                            <td><t t-esc="doc.du_an_id.manager_name.ho_ten if doc.du_an_id.manager_name else 'Chưa phân công'"/></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Thống kê tổng hợp -->
+                            <div style="margin-bottom: 25px;">
+                                <h4 style="color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px;">
+                                    THỐNG KÊ HIỆU QUẢ
+                                </h4>
+                                <table class="table table-bordered" style="margin-top: 10px;">
+                                    <tbody>
+                                        <tr>
+                                            <td style="width: 30%; background-color: #f5f5f5; font-weight: bold;">Tổng công việc:</td>
+                                            <td><t t-esc="doc.tong_cong_viec"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #f5f5f5; font-weight: bold;">Tổng nhiệm vụ:</td>
+                                            <td><t t-esc="doc.tong_nhiem_vu"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #f5f5f5; font-weight: bold;">Nhiệm vụ hoàn thành:</td>
+                                            <td><t t-esc="doc.nhiem_vu_hoan_thanh"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #f5f5f5; font-weight: bold;">Nhiệm vụ trễ hạn:</td>
+                                            <td style="color: #a94442;"><t t-esc="doc.nhiem_vu_tre_han"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #f5f5f5; font-weight: bold;">Tỷ lệ hoàn thành:</td>
+                                            <td><t t-esc="'%.1f' % doc.ty_le_hoan_thanh"/>%</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="background-color: #f5f5f5; font-weight: bold;">Điểm đánh giá trung bình:</td>
+                                            <td><t t-esc="'%.1f' % doc.diem_trung_binh"/> / 10</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 30%; background-color: #d4edda; font-weight: bold;">Xếp loại dự án:</td>
+                                            <td style="color: #155724; font-weight: bold;">
+                                                <t t-if="doc.xep_loai == 'a'">A - XUẤT SẮC</t>
+                                                <t t-if="doc.xep_loai == 'b'">B - KHÁ</t>
+                                                <t t-if="doc.xep_loai == 'c'">C - TRUNG BÌNH</t>
+                                                <t t-if="doc.xep_loai == 'd'">D - YẾU</t>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Danh sách nhiệm vụ chi tiết -->
+                            <div style="margin-bottom: 25px;">
+                                <h4 style="color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px;">
+                                    DANH SÁCH NHIỆM VỤ
+                                </h4>
+                                <table class="table table-bordered table-sm" style="margin-top: 10px;">
+                                    <thead>
+                                        <tr style="background-color: #875A7B; color: white;">
+                                            <th>Mã</th>
+                                            <th>Tên nhiệm vụ</th>
+                                            <th>Người thực hiện</th>
+                                            <th>Trạng thái</th>
+                                            <th>% Hoàn thành</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="doc.nhiem_vu_ids" t-as="nv">
+                                            <td><t t-esc="nv.ma_nhiem_vu"/></td>
+                                            <td><t t-esc="nv.ten_nhiem_vu"/></td>
+                                            <td><t t-esc="nv.nguoi_thuc_hien_id.ho_ten if nv.nguoi_thuc_hien_id else '-'"/></td>
+                                            <td>
+                                                <t t-if="nv.trang_thai == 'hoan_thanh'">Hoàn thành</t>
+                                                <t t-if="nv.trang_thai == 'dang_thuc_hien'">Đang thực hiện</t>
+                                                <t t-if="nv.trang_thai == 'qua_han'">Quá hạn</t>
+                                                <t t-if="nv.trang_thai not in ('hoan_thanh', 'dang_thuc_hien', 'qua_han')"><t t-esc="nv.trang_thai"/></t>
+                                            </td>
+                                            <td><t t-esc="'%.0f' % nv.ti_le_hoan_thanh"/>%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Ghi chú -->
+                            <div t-if="doc.ghi_chu" style="margin-bottom: 25px;">
+                                <h4 style="color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px;">
+                                    GHI CHÚ
+                                </h4>
+                                <p><t t-esc="doc.ghi_chu"/></p>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

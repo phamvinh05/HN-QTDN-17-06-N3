@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Form View -->
+        <record id="view_cong_viec_form" model="ir.ui.view">
+            <field name="name">cong_viec.form</field>
+            <field name="model">cong_viec</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="ma_cong_viec" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group col="2">
+                            <group string="Thông tin công việc">
+                                <field name="ten_cong_viec"/>
+                                <field name="nguoi_phu_trach_id" options="{'no_create': True}"/>
+                                <field name="ngay_bat_dau"/>
+                                <field name="ngay_ket_thuc"/>
+                            </group>
+                            <group string="Ưu tiên và trạng thái">
+                                <field name="muc_do_uu_tien"/>
+                                <field name="trang_thai"/>
+                                <!-- % hoàn thành: tự tính nếu đã có nhiệm vụ con, chỉ cho nhập tay khi chưa có nhiệm vụ -->
+                                <field name="ti_le_hoan_thanh" string="Tỷ lệ hoàn thành (%)"
+                                       attrs="{'readonly': [('nhiem_vu_ids', '!=', [])]}"/>
+                                <field name="gio_lam_du_kien"/>
+                                <!-- Giờ làm thực tế: tự cộng dồn từ tien_do của các nhiệm vụ con nếu có -->
+                                <field name="gio_lam_thuc_te"
+                                       attrs="{'readonly': [('nhiem_vu_ids', '!=', [])]}"/>
+                            </group>
+                        </group>
+                        <group string="Mô tả">
+                            <field name="mo_ta" nolabel="1"/>
+                        </group>
+                        <notebook>
+                            <page string="Nhân viên thực hiện">
+                                <field name="nhan_vien_phan_cong_ids" widget="many2many_tags"
+                                    options="{'no_create': True}"
+                                    attrs="{'readonly': [('nhiem_vu_ids', '!=', [])]}"/>
+                            </page>
+                            <page string="Nhiệm vụ">
+                                <field name="nhiem_vu_ids">
+                                    <tree editable="bottom">
+                                        <field name="ten_nhiem_vu"/>
+                                        <field name="nguoi_thuc_hien_id"/>
+                                        <field name="ngay_bat_dau"/>
+                                        <field name="ngay_ket_thuc"/>
+                                        <field name="ti_le_hoan_thanh" string="% hoàn thành"/>
+                                        <field name="trang_thai"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Tree View -->
+        <record id="view_cong_viec_tree" model="ir.ui.view">
+            <field name="name">cong_viec.tree</field>
+            <field name="model">cong_viec</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="ma_cong_viec"/>
+                    <field name="ten_cong_viec"/>
+                    <field name="nguoi_phu_trach_id"/>
+                    <field name="trang_thai" decoration-success="trang_thai=='hoan_thanh'" 
+                           decoration-warning="trang_thai=='dang_thuc_hien'" 
+                           decoration-danger="trang_thai=='tam_dung'"/>
+                    <field name="muc_do_uu_tien"/>
+                    <field name="ti_le_hoan_thanh" widget="progressbar"/>
+                    <field name="ngay_bat_dau"/>
+                    <field name="ngay_ket_thuc"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_cong_viec_search" model="ir.ui.view">
+            <field name="name">cong_viec.search</field>
+            <field name="model">cong_viec</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="ma_cong_viec"/>
+                    <field name="ten_cong_viec"/>
+                    <filter string="Ưu tiên cao" name="uu_tien_cao" domain="[('muc_do_uu_tien', 'in', ['cao', 'khan_cap'])]"/>
+                    <filter string="Đang thực hiện" name="dang_thuc_hien" domain="[('trang_thai', '=', 'dang_thuc_hien')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Trạng thái" name="group_trang_thai" context="{'group_by': 'trang_thai'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_cong_viec" model="ir.actions.act_window">
+            <field name="name">Công việc</field>
+            <field name="res_model">cong_viec</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Tạo công việc mới
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

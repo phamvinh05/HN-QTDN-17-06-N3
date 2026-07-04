@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Form View -->
+        <record id="view_tien_do_form" model="ir.ui.view">
+            <field name="name">tien_do.form</field>
+            <field name="model">tien_do</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="ma_tien_do" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group col="2">
+                            <group string="Thông tin cập nhật">
+                                <field name="nhiem_vu_id" options="{'no_create': True}"/>
+                                <field name="ngay_cap_nhat"/>
+                                <field name="nguoi_cap_nhat_id" options="{'no_create': True}"/>
+                            </group>
+                            <group string="Tiến độ">
+                                <field name="ti_le_hoan_thanh"/>
+                            </group>
+                        </group>
+                        <group string="Nội dung">
+                            <field name="noi_dung" nolabel="1"/>
+                        </group>
+                        <group string="Ghi chú">
+                            <field name="ghi_chu" nolabel="1"/>
+                        </group>
+                        <group string="File đính kèm">
+                            <field name="ten_file"/>
+                            <field name="file_dinh_kem" filename="ten_file"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Tree View -->
+        <record id="view_tien_do_tree" model="ir.ui.view">
+            <field name="name">tien_do.tree</field>
+            <field name="model">tien_do</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="ma_tien_do"/>
+                    <field name="nhiem_vu_id"/>
+                    <field name="ngay_cap_nhat"/>
+                    <field name="ti_le_hoan_thanh"/>
+                    <field name="nguoi_cap_nhat_id"/>
+                    <field name="noi_dung"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_tien_do_search" model="ir.ui.view">
+            <field name="name">tien_do.search</field>
+            <field name="model">tien_do</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="ma_tien_do"/>
+                    <field name="nhiem_vu_id"/>
+                    <field name="nguoi_cap_nhat_id"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Nhiệm vụ" name="group_nhiem_vu" context="{'group_by': 'nhiem_vu_id'}"/>
+                        <filter string="Người cập nhật" name="group_nguoi_cap_nhat" context="{'group_by': 'nguoi_cap_nhat_id'}"/>
+                        <filter string="Ngày cập nhật" name="group_ngay_cap_nhat" context="{'group_by': 'ngay_cap_nhat'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_tien_do" model="ir.actions.act_window">
+            <field name="name">Tiến độ</field>
+            <field name="res_model">tien_do</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Tạo cập nhật tiến độ mới
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>
