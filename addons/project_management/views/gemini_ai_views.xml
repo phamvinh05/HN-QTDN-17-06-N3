@@ -76,19 +76,19 @@
         </field>
     </record>
     
-    <!-- Action -->
-    <record id="action_gemini_ai_provider" model="ir.actions.act_window">
+    <!-- Xóa action cũ (ir.actions.act_window) trước, vì Odoo không cho phép
+         đổi model của 1 external ID đã tồn tại khi update module. -->
+    <delete id="action_gemini_ai_provider" model="ir.actions.act_window"/>
+
+    <!-- Action: dùng Server Action gọi action_open_settings() để luôn mở đúng
+         bản ghi singleton có sẵn (tự tạo nếu chưa có), tránh mở form trống
+         "New" mỗi lần vào menu (nguyên nhân gây lỗi "Only one Gemini provider
+         can exist" khi bấm Save trên form trống đó). -->
+    <record id="action_gemini_ai_provider" model="ir.actions.server">
         <field name="name">Gemini AI Settings</field>
-        <field name="res_model">gemini.ai.provider</field>
-        <field name="view_mode">form,tree</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Cấu hình Google Gemini AI
-            </p>
-            <p>
-                Click để cấu hình API key cho Gemini AI.
-            </p>
-        </field>
+        <field name="model_id" ref="model_gemini_ai_provider"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_open_settings()</field>
     </record>
     
     <!-- Menu đã được di chuyển sang menu.xml để tránh lỗi phụ thuộc thứ tự load -->

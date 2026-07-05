@@ -31,10 +31,12 @@ class GeminiAIProvider(models.Model):
     name = fields.Char(string='Provider Name', default='Google Gemini AI', readonly=True)
     api_key = fields.Char(string='API Key', help='Google AI Studio API Key')
     model_name = fields.Selection([
-        ('gemini-pro', 'Gemini Pro'),
-        ('gemini-1.5-flash', 'Gemini 1.5 Flash'),
-        ('gemini-1.5-pro', 'Gemini 1.5 Pro'),
-    ], string='Model', default='gemini-pro', required=True)
+        ('gemini-2.5-flash', 'Gemini 2.5 Flash (ổn định, khuyên dùng)'),
+        ('gemini-2.5-pro', 'Gemini 2.5 Pro'),
+        ('gemini-3.5-flash', 'Gemini 3.5 Flash (mới nhất)'),
+    ], string='Model', default='gemini-2.5-flash', required=True,
+       help='Lưu ý: gemini-pro, gemini-1.5-flash, gemini-1.5-pro đã bị Google khai tử '
+            '(shutdown), gọi vào sẽ báo lỗi 404. Chỉ chọn model trong danh sách này.')
     is_active = fields.Boolean(string='Active', default=True)
     temperature = fields.Float(string='Temperature', default=0.7, help='0.0-1.0: Controls randomness')
     max_tokens = fields.Integer(string='Max Output Tokens', default=2048)
@@ -52,9 +54,27 @@ class GeminiAIProvider(models.Model):
         if not provider:
             provider = self.create({
                 'name': 'Google Gemini AI',
-                'model_name': 'gemini-pro',
+                'model_name': 'gemini-2.5-flash',
             })
         return provider
+
+    @api.model
+    def action_open_settings(self):
+        """Mở đúng form của bản ghi singleton (tự tạo nếu chưa có).
+
+        Dùng làm action cho menu "Gemini AI Settings" thay vì act_window
+        tĩnh trỏ thẳng vào 'New' - tránh lỗi 'Only one Gemini provider can
+        exist' khi người dùng vô tình bấm Save trên form trống.
+        """
+        provider = self.get_provider()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Gemini AI Settings',
+            'res_model': 'gemini.ai.provider',
+            'view_mode': 'form',
+            'res_id': provider.id,
+            'target': 'current',
+        }
     
     def _configure_gemini(self):
         """Configure Gemini API với API key"""
