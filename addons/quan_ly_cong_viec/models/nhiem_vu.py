@@ -33,10 +33,27 @@ class NhiemVu(models.Model):
     nguoi_thuc_hien_id = fields.Many2one(
         'nhan_vien',
         string='Người thực hiện',
-        required=True,
         ondelete='restrict',
-        help='Nhân viên được giao nhiệm vụ này'
+        help='Nhân viên được giao nhiệm vụ này. Có thể để trống lúc mới tạo '
+             'để dùng nút "AI gợi ý người thực hiện" (nút gọi type="object" '
+             'sẽ tự lưu tạm bản ghi trước khi chạy - nếu field này required, '
+             'Odoo sẽ chặn lưu tạm vì thiếu giá trị bắt buộc, khiến nút không '
+             'bao giờ chạy được cho nhiệm vụ mới. Ràng buộc bắt buộc phải có '
+             'người thực hiện được chuyển xuống _check_nguoi_thuc_hien_truoc_khi_hoan_thanh '
+             'bên dưới, chỉ áp dụng khi nhiệm vụ chuyển sang trạng thái thực sự cần có người.)'
     )
+    
+    @api.constrains('trang_thai', 'nguoi_thuc_hien_id')
+    def _check_nguoi_thuc_hien_truoc_khi_hoan_thanh(self):
+        """Bắt buộc phải có người thực hiện trước khi nhiệm vụ được coi là
+        đang thực hiện/hoàn thành - nhưng KHÔNG chặn lúc mới tạo (trạng thái
+        'chua_bat_dau'), để nút AI gợi ý người thực hiện dùng được ngay."""
+        for record in self:
+            if record.trang_thai != 'chua_bat_dau' and not record.nguoi_thuc_hien_id:
+                raise ValidationError(
+                    "Nhiệm vụ '%s' cần có người thực hiện trước khi chuyển "
+                    "sang trạng thái khác 'Chưa bắt đầu'." % record.ten_nhiem_vu
+                )
     
     # Người giao việc
     nguoi_giao_viec_id = fields.Many2one(
@@ -382,16 +399,18 @@ class NhiemVu(models.Model):
 
         self.message_post(body=noi_dung, subject='Gợi ý phân công nhân viên (AI)')
 
-        top = ung_vien[0]
+        # Mở lại CHÍNH bản ghi này thay vì chỉ hiện toast - Odoo sẽ fetch lại
+        # dữ liệu (bao gồm chatter) qua 1 lệnh gọi mạng nội bộ (RPC), KHÔNG
+        # tải lại toàn bộ trang/JS/CSS như tag 'reload' - nhanh hơn nhiều,
+        # đặc biệt cần thiết cho nhiệm vụ MỚI (vừa được tự lưu ngầm bởi Odoo
+        # khi bấm nút này trên form chưa Save) để chatter hiện ngay gợi ý.
         return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': 'AI đã gợi ý xong',
-                'message': f"Đề xuất: {top['ten']}. Xem chi tiết trong phần trao đổi bên dưới.",
-                'type': 'success',
-                'sticky': False,
-            }
+            'type': 'ir.actions.act_window',
+            'name': 'Nhiệm vụ',
+            'res_model': 'nhiem_vu',
+            'view_mode': 'form',
+            'res_id': self.id,
+            'target': 'current',
         }
 
     def name_get(self):
